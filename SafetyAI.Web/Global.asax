@@ -1,0 +1,1 @@
+<%@ Application Codebehind="Global.asax.cs" Inherits="SafetyAI.Web.Global" Language="C#" %>

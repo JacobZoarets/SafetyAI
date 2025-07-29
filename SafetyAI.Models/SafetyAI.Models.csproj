@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D4E5F6A7-B8C9-0123-DEF0-456789012345}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SafetyAI.Models</RootNamespace>
+    <AssemblyName>SafetyAI.Models</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\SafetyReport.cs" />
+    <Compile Include="Entities\AnalysisResult.cs" />
+    <Compile Include="Entities\Recommendation.cs" />
+    <Compile Include="Enums\ProcessingStatus.cs" />
+    <Compile Include="Enums\SeverityLevel.cs" />
+    <Compile Include="Enums\IncidentType.cs" />
+    <Compile Include="Enums\RecommendationStatus.cs" />
+    <Compile Include="DTOs\DocumentAnalysisResult.cs" />
+    <Compile Include="DTOs\SafetyAnalysisResult.cs" />
+    <Compile Include="DTOs\ChatResponse.cs" />
+    <Compile Include="DTOs\AudioProcessingResult.cs" />
+    <Compile Include="DTOs\DocumentMetadata.cs" />
+    <Compile Include="DTOs\SafetyComplianceReport.cs" />
+    <Compile Include="DTOs\SafetyDashboardMetrics.cs" />
+    <Compile Include="DTOs\SafetyDocument.cs" />
+    <Compile Include="DTOs\SafetyMetricsByLocation.cs" />
+    <Compile Include="DTOs\SafetyPerformanceIndicator.cs" />
+    <Compile Include="DTOs\SafetyTrendAnalysis.cs" />
+    <Compile Include="DTOs\UserContext.cs" />
+    <Compile Include="DTOs\VoiceCommandResult.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

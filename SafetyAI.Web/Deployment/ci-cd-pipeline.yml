@@ -1,0 +1,311 @@
+# SafetyAI CI/CD Pipeline Configuration
+# This is a generic pipeline that can be adapted for Azure DevOps, GitHub Actions, or Jenkins
+
+name: SafetyAI-CI-CD-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  branches:
+    include:
+    - main
+    - develop
+    - release/*
+  paths:
+    exclude:
+    - README.md
+    - docs/*
+
+variables:
+  buildConfiguration: 'Release'
+  solution: 'SafetyAI.sln'
+  buildPlatform: 'Any CPU'
+  
+stages:
+- stage: Build
+  displayName: 'Build and Test'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build SafetyAI Application'
+    pool:
+      vmImage: 'windows-latest'
+    
+    steps:
+    - checkout: self
+      displayName: 'Checkout Source Code'
+    
+    - task: NuGetToolInstaller@1
+      displayName: 'Install NuGet'
+      inputs:
+        versionSpec: '>=5.0.0'
+    
+    - task: NuGetCommand@2
+      displayName: 'Restore NuGet Packages'
+      inputs:
+        restoreSolution: '$(solution)'
+    
+    - task: VSBuild@1
+      displayName: 'Build Solution'
+      inputs:
+        solution: '$(solution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        msbuildArgs: '/p:PublishProfile=FolderProfile /p:PublishUrl="$(Build.ArtifactStagingDirectory)/publish/"'
+    
+    - task: VSTest@2
+      displayName: 'Run Unit Tests'
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          **\*Tests.dll
+          !**\*TestAdapter.dll
+          !**\obj\**
+        codeCoverageEnabled: true
+        testRunTitle: 'SafetyAI Unit Tests'
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'Run Integration Tests'
+      inputs:
+        command: 'test'
+        projects: '**/*Tests.csproj'
+        arguments: '--configuration $(buildConfiguration) --logger trx --collect:"XPlat Code Coverage"'
+    
+    - task: PublishTestResults@2
+      displayName: 'Publish Test Results'
+      inputs:
+        testResultsFormat: 'VSTest'
+        testResultsFiles: '**/*.trx'
+        mergeTestResults: true
+        failTaskOnFailedTests: true
+    
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish Code Coverage'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+        reportDirectory: '$(Agent.TempDirectory)/**/coveragereport'
+        failIfCoverageEmpty: false
+    
+    - task: SecurityCodeAnalysis-Task@1
+      displayName: 'Run Security Code Analysis'
+      inputs:
+        toolLogsNotFoundAction: 'Standard'
+    
+    - task: CopyFiles@2
+      displayName: 'Copy Deployment Scripts'
+      inputs:
+        SourceFolder: 'SafetyAI.Web/Deployment'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/deployment'
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Build Artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'SafetyAI-$(Build.BuildNumber)'
+        publishLocation: 'Container'
+
+- stage: DeployDev
+  displayName: 'Deploy to Development'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  jobs:
+  - deployment: DeployToDev
+    displayName: 'Deploy to Development Environment'
+    pool:
+      vmImage: 'windows-latest'
+    environment: 'SafetyAI-Development'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: 'SafetyAI-$(Build.BuildNumber)'
+          
+          - task: PowerShell@2
+            displayName: 'Deploy to Development Server'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/deployment/deploy.ps1'
+              arguments: '-Environment Development -SiteName SafetyAI-Dev -AppPoolName SafetyAI_Dev_AppPool'
+              workingDirectory: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/publish'
+          
+          - task: SqlAzureDacpacDeployment@1
+            displayName: 'Deploy Database Changes'
+            inputs:
+              azureSubscription: 'SafetyAI-ServiceConnection'
+              AuthenticationType: 'server'
+              ServerName: '$(DevDatabaseServer)'
+              DatabaseName: 'SafetyAI_Dev'
+              SqlUsername: '$(DevDatabaseUser)'
+              SqlPassword: '$(DevDatabasePassword)'
+              deployType: 'SqlTask'
+              SqlFile: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/deployment/database-migration.sql'
+          
+          - task: PowerShell@2
+            displayName: 'Run Smoke Tests'
+            inputs:
+              targetType: 'inline'
+              script: |
+                $response = Invoke-WebRequest -Uri "http://$(DevServerUrl)/Default.aspx" -TimeoutSec 30
+                if ($response.StatusCode -ne 200) {
+                  Write-Error "Smoke test failed. Status code: $($response.StatusCode)"
+                  exit 1
+                }
+                Write-Host "Smoke test passed. Application is responding."
+
+- stage: DeployStaging
+  displayName: 'Deploy to Staging'
+  dependsOn: Build
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'))
+  jobs:
+  - deployment: DeployToStaging
+    displayName: 'Deploy to Staging Environment'
+    pool:
+      vmImage: 'windows-latest'
+    environment: 'SafetyAI-Staging'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: 'SafetyAI-$(Build.BuildNumber)'
+          
+          - task: PowerShell@2
+            displayName: 'Deploy to Staging Server'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/deployment/deploy.ps1'
+              arguments: '-Environment Staging -SiteName SafetyAI-Stage -AppPoolName SafetyAI_Stage_AppPool'
+              workingDirectory: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/publish'
+          
+          - task: SqlAzureDacpacDeployment@1
+            displayName: 'Deploy Database Changes'
+            inputs:
+              azureSubscription: 'SafetyAI-ServiceConnection'
+              AuthenticationType: 'server'
+              ServerName: '$(StagingDatabaseServer)'
+              DatabaseName: 'SafetyAI_Stage'
+              SqlUsername: '$(StagingDatabaseUser)'
+              SqlPassword: '$(StagingDatabasePassword)'
+              deployType: 'SqlTask'
+              SqlFile: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/deployment/database-migration.sql'
+          
+          - task: PowerShell@2
+            displayName: 'Run Integration Tests'
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Run comprehensive integration tests against staging
+                Write-Host "Running integration tests against staging environment..."
+                
+                # Test main application
+                $response = Invoke-WebRequest -Uri "http://$(StagingServerUrl)/Default.aspx" -TimeoutSec 30
+                if ($response.StatusCode -ne 200) {
+                  Write-Error "Main application test failed"
+                  exit 1
+                }
+                
+                # Test API endpoints
+                $apiResponse = Invoke-WebRequest -Uri "http://$(StagingServerUrl)/api/v1/safety/chat/suggestions" -TimeoutSec 30
+                if ($apiResponse.StatusCode -ne 200) {
+                  Write-Error "API test failed"
+                  exit 1
+                }
+                
+                Write-Host "All integration tests passed"
+
+- stage: DeployProduction
+  displayName: 'Deploy to Production'
+  dependsOn: DeployStaging
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+  - deployment: DeployToProduction
+    displayName: 'Deploy to Production Environment'
+    pool:
+      vmImage: 'windows-latest'
+    environment: 'SafetyAI-Production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: 'SafetyAI-$(Build.BuildNumber)'
+          
+          - task: PowerShell@2
+            displayName: 'Create Production Backup'
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Host "Creating production backup before deployment..."
+                # This would typically backup the current production deployment
+                # and database before applying changes
+          
+          - task: PowerShell@2
+            displayName: 'Deploy to Production Server'
+            inputs:
+              targetType: 'filePath'
+              filePath: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/deployment/deploy.ps1'
+              arguments: '-Environment Production -SiteName SafetyAI -AppPoolName SafetyAI_AppPool'
+              workingDirectory: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/publish'
+          
+          - task: SqlAzureDacpacDeployment@1
+            displayName: 'Deploy Database Changes'
+            inputs:
+              azureSubscription: 'SafetyAI-ServiceConnection'
+              AuthenticationType: 'server'
+              ServerName: '$(ProductionDatabaseServer)'
+              DatabaseName: 'SafetyAI_Prod'
+              SqlUsername: '$(ProductionDatabaseUser)'
+              SqlPassword: '$(ProductionDatabasePassword)'
+              deployType: 'SqlTask'
+              SqlFile: '$(Pipeline.Workspace)/SafetyAI-$(Build.BuildNumber)/deployment/database-migration.sql'
+          
+          - task: PowerShell@2
+            displayName: 'Production Health Check'
+            inputs:
+              targetType: 'inline'
+              script: |
+                Write-Host "Running production health checks..."
+                
+                # Wait for application to warm up
+                Start-Sleep -Seconds 30
+                
+                # Test main application
+                $response = Invoke-WebRequest -Uri "https://$(ProductionServerUrl)/Default.aspx" -TimeoutSec 60
+                if ($response.StatusCode -ne 200) {
+                  Write-Error "Production health check failed"
+                  exit 1
+                }
+                
+                # Test critical API endpoints
+                $apiResponse = Invoke-WebRequest -Uri "https://$(ProductionServerUrl)/api/v1/safety/chat/suggestions" -TimeoutSec 60
+                if ($apiResponse.StatusCode -ne 200) {
+                  Write-Error "Production API health check failed"
+                  exit 1
+                }
+                
+                Write-Host "Production deployment successful and healthy"
+          
+          - task: PowerShell@2
+            displayName: 'Send Deployment Notification'
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Send notification to team about successful production deployment
+                Write-Host "SafetyAI version $(Build.BuildNumber) deployed to production successfully"
+                # This would typically send email/Slack notifications
+
+# Pipeline variables that should be configured in the pipeline settings:
+# - DevDatabaseServer: Development database server
+# - DevDatabaseUser: Development database username
+# - DevDatabasePassword: Development database password (secure)
+# - DevServerUrl: Development server URL
+# - StagingDatabaseServer: Staging database server
+# - StagingDatabaseUser: Staging database username
+# - StagingDatabasePassword: Staging database password (secure)
+# - StagingServerUrl: Staging server URL
+# - ProductionDatabaseServer: Production database server
+# - ProductionDatabaseUser: Production database username
+# - ProductionDatabasePassword: Production database password (secure)
+# - ProductionServerUrl: Production server URL

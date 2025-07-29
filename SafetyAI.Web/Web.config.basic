@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <connectionStrings>
+    <add name="SafetyAIConnection" connectionString="Data Source=LAPTOP-D4TSKE3L\SQLEXPRESS;Initial Catalog=SafetyAI;Integrated Security=True" providerName="System.Data.SqlClient" />
+  </connectionStrings>
+  
+  <appSettings>
+    <add key="GeminiAPIKey" value="test-key" />
+  </appSettings>
+  
+  <system.web>
+    <compilation debug="true" targetFramework="4.8"/>
+    <httpRuntime targetFramework="4.8"/>
+    <authentication mode="Windows" />
+  </system.web>
+</configuration>

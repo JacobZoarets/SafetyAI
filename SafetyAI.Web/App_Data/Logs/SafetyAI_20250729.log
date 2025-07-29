@@ -1,0 +1,74 @@
+[2025-07-29 00:13:31.274] [INFO] [Startup] Configuration validation passed
+[2025-07-29 00:13:50.958] [INFO] [Startup] Database initialization completed
+[2025-07-29 00:13:50.972] [INFO] [Startup] Dependency injection configured
+[2025-07-29 00:13:50.983] [INFO] [Startup] Application startup completed successfully
+[2025-07-29 00:15:34.415] [ERROR] [Application] המערכת התריעה על חריג מסוג 'System.Web.HttpUnhandledException'.
+Stack Trace:    ב-  System.Web.UI.Page.HandleError(Exception e)
+   ב-  System.Web.UI.Page.<ProcessRequestMainAsync>d__523.MoveNext()
+--- סיום מעקב אחר ערימה ממיקום קודם שבו הוצגה התרעה על חריגה ---
+   ב-  System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   ב-  System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   ב-  System.Web.Util.WithinCancellableCallbackTaskAwaitable.WithinCancellableCallbackTaskAwaiter.GetResult()
+   ב-  System.Web.UI.Page.<ProcessRequestAsync>d__515.MoveNext()
+--- סיום מעקב אחר ערימה ממיקום קודם שבו הוצגה התרעה על חריגה ---
+   ב-  System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   ב-  System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   ב-  System.Web.UI.Page.<ProcessRequestAsync>d__554.MoveNext()
+--- סיום מעקב אחר ערימה ממיקום קודם שבו הוצגה התרעה על חריגה ---
+   ב-  System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   ב-  System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   ב-  System.Web.TaskAsyncHelper.EndTask(IAsyncResult ar)
+   ב-  ASP.default_aspx.EndProcessRequest(IAsyncResult ar) ב- c:\Users\Administrator\AppData\Local\Temp\Temporary ASP.NET Files\vs\2a747c3e\4e415aa9\App_Web_drp55bes.0.cs:שורה 0
+   ב-  System.Web.HttpApplication.CallHandlerExecutionStep.InvokeEndHandler(IAsyncResult ar)
+   ב-  System.Web.HttpApplication.CallHandlerExecutionStep.OnAsyncHandlerCompletion(IAsyncResult ar)
+Inner Exception: מחרוזת קלט לא היתה בתבנית הנכונה.
+[2025-07-29 00:17:55.318] [ERROR] [ExportCSV] אירע ביטול של הליך משנה (Thread).
+Stack Trace:    ב-  System.Threading.Thread.AbortInternal()
+   ב-  System.Threading.Thread.Abort(Object stateInfo)
+   ב-  System.Web.HttpResponse.AbortCurrentThread()
+   ב-  SafetyAI.Web.History.btnExportCSV_Click(Object sender, EventArgs e) ב- C:\Users\Administrator\Codes\DatWiseEHS\SafetyAI.Web\History.aspx.cs:שורה 237
+[2025-07-29 00:18:26.622] [ERROR] [ExportExcel] אירע ביטול של הליך משנה (Thread).
+Stack Trace:    ב-  System.Threading.Thread.AbortInternal()
+   ב-  System.Threading.Thread.Abort(Object stateInfo)
+   ב-  System.Web.HttpResponse.AbortCurrentThread()
+   ב-  SafetyAI.Web.History.btnExportExcel_Click(Object sender, EventArgs e) ב- C:\Users\Administrator\Codes\DatWiseEHS\SafetyAI.Web\History.aspx.cs:שורה 254
+[2025-07-29 00:18:43.261] [ERROR] [ExportPDF] אירע ביטול של הליך משנה (Thread).
+Stack Trace:    ב-  System.Threading.Thread.AbortInternal()
+   ב-  System.Threading.Thread.Abort(Object stateInfo)
+   ב-  System.Web.HttpResponse.AbortCurrentThread()
+   ב-  SafetyAI.Web.History.btnExportPDF_Click(Object sender, EventArgs e) ב- C:\Users\Administrator\Codes\DatWiseEHS\SafetyAI.Web\History.aspx.cs:שורה 269
+[2025-07-29 00:44:58.154] [INFO] [Startup] Configuration validation passed
+[2025-07-29 00:45:18.763] [INFO] [Startup] Database initialization completed
+[2025-07-29 00:45:18.815] [INFO] [Startup] Dependency injection configured
+[2025-07-29 00:45:18.825] [INFO] [Startup] Application startup completed successfully
+[2025-07-29 00:52:09.223] [INFO] [Startup] Configuration validation passed
+[2025-07-29 00:52:32.118] [INFO] [Startup] Database initialization completed
+[2025-07-29 00:52:32.142] [INFO] [Startup] Dependency injection configured
+[2025-07-29 00:52:32.144] [INFO] [Startup] Application startup completed successfully
+[2025-07-29 01:03:54.043] [INFO] [Operations] Starting operation: ProcessChatQuery_chat_638893584277743643_c883533a
+[2025-07-29 01:03:54.082] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Processing chat query: What are the lockout/tagout procedures?... (Elapsed: 36ms)
+[2025-07-29 01:03:54.133] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Calling Gemini API for chat response (Elapsed: 88ms)
+[2025-07-29 01:04:13.330] [INFO] [Operations] Starting operation: RetrieveRelevantDocuments
+[2025-07-29 01:04:13.338] [INFO] [Operations] [RetrieveRelevantDocuments] Retrieving documents for query: What are the lockout/tagout pr... (Elapsed: 8ms)
+[2025-07-29 01:04:13.371] [INFO] [Operations] [RetrieveRelevantDocuments] Retrieved 2 relevant documents (Elapsed: 44ms)
+[2025-07-29 01:04:13.379] [INFO] [Operations] Completed operation: RetrieveRelevantDocuments (Total time: 53ms)
+[2025-07-29 01:04:13.399] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Chat response generated. Confidence: 95.00% (Elapsed: 19353ms)
+[2025-07-29 01:04:13.403] [INFO] [Operations] Completed operation: ProcessChatQuery_chat_638893584277743643_c883533a (Total time: 19357ms)
+[2025-07-29 01:04:14.054] [INFO] [Operations] Starting operation: ProcessChatQuery_chat_638893584277743643_c883533a
+[2025-07-29 01:04:14.060] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Processing chat query: What are the lockout/tagout procedures?... (Elapsed: 5ms)
+[2025-07-29 01:04:14.074] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Calling Gemini API for chat response (Elapsed: 19ms)
+[2025-07-29 01:04:27.892] [INFO] [Operations] Starting operation: RetrieveRelevantDocuments
+[2025-07-29 01:04:27.898] [INFO] [Operations] [RetrieveRelevantDocuments] Retrieving documents for query: What are the lockout/tagout pr... (Elapsed: 12ms)
+[2025-07-29 01:04:27.898] [INFO] [Operations] [RetrieveRelevantDocuments] Retrieved 2 relevant documents (Elapsed: 17ms)
+[2025-07-29 01:04:27.914] [INFO] [Operations] Completed operation: RetrieveRelevantDocuments (Total time: 23ms)
+[2025-07-29 01:04:27.927] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Chat response generated. Confidence: 95.00% (Elapsed: 13877ms)
+[2025-07-29 01:04:27.953] [INFO] [Operations] Completed operation: ProcessChatQuery_chat_638893584277743643_c883533a (Total time: 13898ms)
+[2025-07-29 01:08:11.478] [INFO] [Operations] Starting operation: ProcessChatQuery_chat_638893584277743643_c883533a
+[2025-07-29 01:08:11.559] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Processing chat query: What are the lockout/tagout procedures?... (Elapsed: 80ms)
+[2025-07-29 01:08:11.619] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Calling Gemini API for chat response (Elapsed: 141ms)
+[2025-07-29 01:08:29.086] [INFO] [Operations] Starting operation: RetrieveRelevantDocuments
+[2025-07-29 01:08:29.125] [INFO] [Operations] [RetrieveRelevantDocuments] Retrieving documents for query: What are the lockout/tagout pr... (Elapsed: 38ms)
+[2025-07-29 01:08:29.247] [INFO] [Operations] [RetrieveRelevantDocuments] Retrieved 2 relevant documents (Elapsed: 170ms)
+[2025-07-29 01:08:29.284] [INFO] [Operations] Completed operation: RetrieveRelevantDocuments (Total time: 197ms)
+[2025-07-29 01:08:29.356] [INFO] [Operations] [ProcessChatQuery_chat_638893584277743643_c883533a] Chat response generated. Confidence: 95.00% (Elapsed: 17878ms)
+[2025-07-29 01:08:29.452] [INFO] [Operations] Completed operation: ProcessChatQuery_chat_638893584277743643_c883533a (Total time: 17973ms)

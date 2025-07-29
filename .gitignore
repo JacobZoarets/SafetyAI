@@ -1,0 +1,71 @@
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet Packages
+*.nupkg
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+
+# Entity Framework
+*.edmx.diagram
+*.edmx.sql
+
+# Web publish profiles
+PublishProfiles/
+*.pubxml
+*.publishproj
+
+# Azure Web App publish settings
+*.PublishSettings
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# IDE specific files
+.kiro/
+.claude/
+
+# Configuration files with sensitive data
+**/App.config
+**/Web.config
+!**/Web.config.example
