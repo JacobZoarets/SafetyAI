@@ -68,4 +68,5 @@ $RECYCLE.BIN/
 # Configuration files with sensitive data
 **/App.config
 **/Web.config
+**/Web.config.original
 !**/Web.config.example
